@@ -1845,8 +1845,15 @@ int gasket_register_device(const struct gasket_driver_desc *driver_desc)
      * to only accept a single argument. This change was also backported to
      * RHEL 9.4, whose kernel is nominally versioned 5.14.0.
      * */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0) || \
-    (defined RHEL_RELEASE_CODE && RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(9, 4))
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+# define GASKET_CLASS_CREATE_ONE_ARG
+#elif defined(RHEL_RELEASE_CODE)
+# if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(9, 4)
+#  define GASKET_CLASS_CREATE_ONE_ARG
+# endif
+#endif
+
+#ifdef GASKET_CLASS_CREATE_ONE_ARG
     internal->class = class_create(driver_desc->name);
 #else
     internal->class = class_create(driver_desc->module, driver_desc->name);
