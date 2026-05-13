@@ -1,3 +1,15 @@
+gasket-dkms (1.0-19) unstable; urgency=medium
+
+  * Fix preprocessor error on non-RHEL kernels >= 7.0 caused by
+    RHEL_RELEASE_VERSION() being used in compound #if expressions.
+    GCC expands all macros before evaluating logical operators, so
+    RHEL_RELEASE_VERSION(9, x) triggers a syntax error when the macro
+    is undefined. Restructured guards in gasket_core.c (class_create)
+    and gasket_interrupt.c (eventfd_signal) to use nested #ifdef blocks
+    so RHEL_RELEASE_VERSION() is only evaluated on RHEL kernels.
+
+ -- Sergio Baiao <sergiobaiao@gmail.com>  Mon, 12 May 2026 17:40:00 -0300
+
 gasket-dkms (1.0-18) unstable; urgency=low
 
   * Import DMA_BUF symbol namespace for kernels >= 5.16.
