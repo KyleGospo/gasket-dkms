@@ -920,9 +920,15 @@ int gasket_mm_unmap_region(const struct gasket_dev *gasket_dev,
 	 *
 	 * Next multiple of y: ceil_div(x, y) * y
 	 */
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 1, 0)
 	zap_vma_ptes(vma, vma->vm_start + virt_offset,
-		     DIV_ROUND_UP(mappable_region.length_bytes, PAGE_SIZE) *
-		     PAGE_SIZE);
+				 DIV_ROUND_UP(mappable_region.length_bytes, PAGE_SIZE) *
+				 PAGE_SIZE);
+	#else
+	zap_special_vma_range(vma, vma->vm_start + virt_offset,
+						  DIV_ROUND_UP(mappable_region.length_bytes, PAGE_SIZE) *
+						  PAGE_SIZE);
+	#endif
 	return 0;
 }
 EXPORT_SYMBOL(gasket_mm_unmap_region);
