@@ -54,7 +54,15 @@
 #include <linux/vmalloc.h>
 
 #if __has_include(<linux/dma-buf.h>)
+/* RHEL 10 backported the string-literal namespace form to its 6.12 kernel. */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
+# define GASKET_NS_STRING
+#elif defined(RHEL_RELEASE_CODE)
+# if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(10, 0)
+#  define GASKET_NS_STRING
+# endif
+#endif
+#ifdef GASKET_NS_STRING
 MODULE_IMPORT_NS("DMA_BUF");
 #else
 MODULE_IMPORT_NS(DMA_BUF);
